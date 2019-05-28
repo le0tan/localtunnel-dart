@@ -5,17 +5,13 @@ import 'dart:io';
 class TunnelCluster extends Observable {
   String remote_host;
   int remote_port;
-
   String local_host;
   int local_port;
-
   int tunnelCount;
-
   static TunnelCluster _tunnelCluster;
-
   TunnelConnectionModel _tunnelConnection;
 
-  TunnelCluster(TunnelConnectionModel tunnelConnection) {
+  TunnelCluster._initTunnelCluster(TunnelConnectionModel tunnelConnection) {
     tunnelCount = 1;
     this._tunnelConnection = tunnelConnection;
   }
@@ -23,7 +19,7 @@ class TunnelCluster extends Observable {
   static TunnelCluster getTunnelCluster(
       TunnelConnectionModel tunnelConnection) {
     if (_tunnelCluster == null) {
-      _tunnelCluster = new TunnelCluster(tunnelConnection);
+      _tunnelCluster = TunnelCluster._initTunnelCluster(tunnelConnection);
     }
     return _tunnelCluster;
   }
@@ -35,18 +31,11 @@ class TunnelCluster extends Observable {
     String local_host = "localhost"; //opt.local_host || "localhost";
     int local_port = 1234; //opt.local_port;
 
-    print("establishing tunnel " +
-        local_host +
-        " " +
-        local_port.toString() +
-        " <> " +
-        remote_host +
-        " " +
-        remote_port.toString());
+    print(
+        "establishing tunnel $local_host:$local_port <-> $remote_host:$remote_port");
 
     // connection to localtunnel server
     Socket remote = await Socket.connect(remote_host, remote_port);
-
     Socket local = await Socket.connect(local_host, local_port);
 
     print("Sockets established.");

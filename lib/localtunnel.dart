@@ -11,7 +11,6 @@ import 'dart:io';
 import 'package:observable/observable.dart';
 
 void main() async {
-  
   ServerSocket clientSocket = await ServerSocket.bind('127.0.0.1', 23333);
   Socket localSocket = await Socket.connect('127.0.0.1', 3000);
   clientSocket.listen((Socket s) {
@@ -20,7 +19,7 @@ void main() async {
       // how do I send `data` via localSocket without closing it?
 
       // Then I need to forward the response from localsocket to `s`
-      localSocket.listen((resp){
+      localSocket.listen((resp) {
         s.write(resp);
       });
     }, onDone: () {

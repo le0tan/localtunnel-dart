@@ -1,6 +1,6 @@
 enum TunnelClusterEventType {
-	OPEN, //once + open
-	ERROR, 
-	DEAD,
-	REQUEST
+  OPEN, //once + open
+  ERROR,
+  DEAD,
+  REQUEST
 }

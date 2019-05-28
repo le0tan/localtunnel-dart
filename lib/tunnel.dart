@@ -9,19 +9,8 @@ import 'package:localtunnel/tunnel_event.dart';
 
 class Tunnel extends Observable {
   bool _closed;
-
-  bool isClosed() {
-    return _closed;
-  }
-
   String _host;
-
-  String getHost() {
-    return _host;
-  }
-
   String _subdomain;
-
   int _tunnelCount;
 
   Tunnel(String host, String subdomain) {
@@ -34,14 +23,10 @@ class Tunnel extends Observable {
   }
 
   void open() async {
-    TunnelConnectionModel tunnelConnection = null;
+    TunnelConnectionModel tunnelConnection;
     tunnelConnection = await _init();
-    print("connected to tunnel:" +
-        tunnelConnection.name +
-        " " +
-        tunnelConnection.remote_host +
-        " " +
-        tunnelConnection.remote_port.toString());
+    print(
+        "connected to tunnel: https://${tunnelConnection.name}.${tunnelConnection.remote_host} at ${tunnelConnection.remote_port}");
     _establish(tunnelConnection);
   }
 
@@ -72,8 +57,8 @@ class Tunnel extends Observable {
         TunnelConnectionResponseModel(
             data['port'], data['max_conn_count'], data['id'], data['url']);
 
-    int port = tunnelConnectionResponse.port;
-    String host = upstream.host;
+    // int port = tunnelConnectionResponse.port;
+    // String host = upstream.host;
     int max_conn = tunnelConnectionResponse.max_conn_count != null
         ? tunnelConnectionResponse.max_conn_count
         : 1;
@@ -90,7 +75,7 @@ class Tunnel extends Observable {
         TunnelCluster.getTunnelCluster(tunnelConnection);
     tunnelCluster.changes.listen((data) {
       // what to do here???
-      print(data);
+      // maybe call update? and open a new tunnel?
     });
 
     _tunnelCount = 0;

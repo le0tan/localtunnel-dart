@@ -7,37 +7,29 @@ export 'src/localtunnel_base.dart';
 
 // TODO: Export any libraries intended for clients of this package.
 
-import 'dart:async';
 import 'dart:io';
-import 'package:http_server/http_server.dart';
+import 'package:observable/observable.dart';
 
-void main() {
-  String indexRequest = 'GET / HTTP/1.1\nConnection: close\n\n';
+void main() async {
+  
+  ServerSocket clientSocket = await ServerSocket.bind('127.0.0.1', 23333);
+  Socket localSocket = await Socket.connect('127.0.0.1', 3000);
+  clientSocket.listen((Socket s) {
+    s.listen((data) {
+      localSocket.write(String.fromCharCodes(data).trim());
+      // how do I send `data` via localSocket without closing it?
 
-  // runZoned(() {
-  //   HttpServer.bind('127.0.0.1', 3000).then((server) {
-  //     print('Server running');
-  //     server.listen((req) {
-  //       print(req.headers);
-  //     });
-  //   });
-  // });
-
-  // // 7777 is localtunnel server's port
-  // Socket.connect('127.0.0.1', 7777).then((socket) {
-  //   print('Connected to: '
-  //       '${socket.remoteAddress.address}:${socket.remotePort}');
-  //   socket.listen((data) {
-  //     print(new String.fromCharCodes(data).trim());
-  //   }, onDone: () {
-  //     print('done');
-  //     socket.destroy();
-  //   });
-  // });
-
-  // 23333 is localtunnel client's port
-  ServerSocket.bind('127.0.0.1', 23333).then((ServerSocket server) {
-    server.listen(handleClient);
+      // Then I need to forward the response from localsocket to `s`
+      localSocket.listen((resp){
+        s.write(resp);
+      });
+    }, onDone: () {
+      print('s done');
+      s.destroy();
+    });
+  }, onDone: () {
+    print('clientSocket done');
+    clientSocket.close();
   });
 }
 
@@ -50,6 +42,7 @@ void handleClient(Socket client) {
       print('Connected to: '
           '${socket.remoteAddress.address}:${socket.remotePort}');
       socket.write(data);
+      socket.listen((data) {});
       socket.close();
     });
   }, onDone: () {

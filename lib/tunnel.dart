@@ -53,20 +53,24 @@ class Tunnel extends Observable {
     // URL upstream =new URL(uri);
     Uri upstream = Uri.parse(uri);
     Dio dio = Dio();
+    print(uri);
     var resp = await dio.get(uri,
         options: Options(
             contentType: ContentType.json,
             connectTimeout: 5000,
             sendTimeout: 5000,
             responseType: ResponseType.json));
-
-    if (resp.statusCode != HttpStatus.accepted) {
+    print(resp.statusCode);
+    if (resp.statusCode != 200) {
       throw new Exception(
           "localtunnel server returned an error, please try again");
     }
 
+    Map<String, dynamic> data = resp.data;
+
     TunnelConnectionResponseModel tunnelConnectionResponse =
-        null; // fix this later from resp.data
+        TunnelConnectionResponseModel(
+            data['port'], data['max_conn_count'], data['id'], data['url']);
 
     int port = tunnelConnectionResponse.port;
     String host = upstream.host;
